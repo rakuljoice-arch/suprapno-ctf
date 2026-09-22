@@ -1,11 +1,15 @@
+cd ~/suprapno-ctf
+
+cat > app.py <<'PY'
 from flask import Flask, request, render_template_string
 import hashlib
+import os
 
 app = Flask(__name__)
 
-SECRET = "suprapno"
+SECRET = os.environ["SECRET"]
 HASH = hashlib.sha256(SECRET.encode()).hexdigest()
-FLAG = "RULLZCTF{suprapno_7F29_a81C}"
+FLAG = os.environ["FLAG"]
 
 HTML = """
 <!DOCTYPE html>
@@ -46,4 +50,12 @@ def index():
 
     return render_template_string(HTML, hash=HASH, result=result)
 
-app.run(host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+PY
+
+printf "flask\ngunicorn\n" > requirements.txt
+
+git add app.py requirements.txt
+git commit -m "Secure challenge secrets"
+git push
